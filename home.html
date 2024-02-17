@@ -1,104 +1,108 @@
-<head>
-  <meta charset="utf-8">
-  <title>KRTSD Bot Monitor</title>
-  <link rel="icon" href="./icon.png">
-  <script type="text/javascript" src="https://d3js.org/d3.v6.min.js"></script> 
-</head>
-<body>
-  <h1>現時点ではエラーが出るため、取得できません。</h1>
-  <p>開発者が直すまで待ちましょう。</p>
-  <a href="https://qiita.com/akira2768922/items/3adecc0786ee789b9442" target="_blank" style="font-size:37.5px;text-align:left;position:relative;">参考元</a>
-  <p id="tweet">何気にexplessについても少しわかった</p>
-  <div class="monitor">
-    <div id="monitor1">
-      <p>monitor1</p>
+<!DOCTYPE html>
+<html lang="ja">
+
+  <head>
+    <meta charset="utf-8">
+    <title>KRTSD Bot Monitor</title>
+    <link rel="icon" href="./icon.png">
+    <script type="text/javascript" src="https://d3js.org/d3.v6.min.js"></script> 
+  </head>
+  <body>
+    <h1>現時点ではエラーが出るため、取得できません。</h1>
+    <p>開発者が直すまで待ちましょう。</p>
+    <a href="https://qiita.com/akira2768922/items/3adecc0786ee789b9442" target="_blank" style="font-size:37.5px;text-align:left;position:relative;">参考元</a>
+    <p id="tweet">何気にexplessについても少しわかった</p>
+    <div class="monitor">
+      <div id="monitor1">
+        <p>monitor1</p>
+      </div>
     </div>
-  </div>
-  <style>
-  body {
-    background-color:#000000;
-    color:#ffffff;
-  }
-  a:visited {
-    color:#ffffff;
-  }
-  .monitor {
-    background-color:#424242;
-    float:left;
-    position:relative;
-    padding:25px;
-    top:100px;
-  }
-  #tweet {
-    font-size:10px;
-  }
-  </style>
-  <script type="text/javascript">
-    class performanceMonitor {
-    constructor(select, width, height, url) {
-      const margin = {'top': 10, 'bottom':10, 'left':40, 'right': 40};
-      const history_max = 100;
-      this.width = width;
-      this.height = height;
-      this.url = url;
-      this.items = {};
-      this.svg = d3.select(select).append("svg").attr("width", width).attr("height", height);
-      this.yScale = d3.scaleLinear().domain([0, 100]).range([height - margin.bottom, margin.top]);
-      this.xScale = d3.scaleLinear().domain([0, history_max]).range([width - margin.right, margin.left]);
-      this.cScale = d3.scaleOrdinal(d3.schemePaired);
-      this.line = d3.line().x((d, i) => this.xScale(i)).y((d, i) => this.yScale(d));
+    <style>
+    body {
+      background-color:#000000;
+      color:#ffffff;
+    }
+    a:visited {
+      color:#ffffff;
+    }
+    .monitor {
+      background-color:#424242;
+      float:left;
+      position:relative;
+      padding:25px;
+      top:100px;
+    }
+    #tweet {
+      font-size:10px;
+    }
+    </style>
+    <script type="text/javascript">
+      class performanceMonitor {
+      constructor(select, width, height, url) {
+        const margin = {'top': 10, 'bottom':10, 'left':40, 'right': 40};
+        const history_max = 100;
+        this.width = width;
+        this.height = height;
+        this.url = url;
+        this.items = {};
+        this.svg = d3.select(select).append("svg").attr("width", width).attr("height", height);
+        this.yScale = d3.scaleLinear().domain([0, 100]).range([height - margin.bottom, margin.top]);
+        this.xScale = d3.scaleLinear().domain([0, history_max]).range([width - margin.right, margin.left]);
+        this.cScale = d3.scaleOrdinal(d3.schemePaired);
+        this.line = d3.line().x((d, i) => this.xScale(i)).y((d, i) => this.yScale(d));
 // グラフの背景
-      this.svg.append("rect").attr("fill","#F8F8F8").attr("stroke","#000000")
-        .attr("x", this.xScale(100)).attr("width", this.xScale(0)-this.xScale(100))
-        .attr("y", this.yScale(100)).attr("height", this.yScale(0)-this.yScale(100));
+        this.svg.append("rect").attr("fill","#F8F8F8").attr("stroke","#000000")
+          .attr("x", this.xScale(100)).attr("width", this.xScale(0)-this.xScale(100))
+          .attr("y", this.yScale(100)).attr("height", this.yScale(0)-this.yScale(100));
 // 左右にY軸表示
-      this.svg.append("g").attr("class", "axis axis-l").attr("transform", `translate(${margin.left},0)`)
-        .call(d3.axisLeft(this.yScale).ticks(10));
-      this.svg.append("g").attr("class", "axis axis-r").attr("transform", `translate(${width - margin.right},0)`)
-        .call(d3.axisRight(this.yScale).ticks(10));
-      this.platform = this.svg.append("text").attr("x",65).attr("y",40).attr("font-size","16px");// プラットフォームの表示
-    }
-    update() {
-      let parent = this;
-      fetch(this.url).then(res => res.json()).then(data => parent.draw(data));
-    }
-    draw(data) {
-      this.platform.text(data.platform);// プラットフォームテキストの更新
-      for(let item in data.items) {// アイテム数分繰り返し
-        if ((item in this.items) == false) {
+        this.svg.append("g").attr("class", "axis axis-l").attr("transform", `translate(${margin.left},0)`)
+          .call(d3.axisLeft(this.yScale).ticks(10));
+        this.svg.append("g").attr("class", "axis axis-r").attr("transform", `translate(${width - margin.right},0)`)
+          .call(d3.axisRight(this.yScale).ticks(10));
+        this.platform = this.svg.append("text").attr("x",65).attr("y",40).attr("font-size","16px");// プラットフォームの表示
+      }
+      update() {
+        let parent = this;
+        fetch(this.url).then(res => res.json()).then(data => parent.draw(data));
+      }
+      draw(data) {
+        this.platform.text(data.platform);// プラットフォームテキストの更新
+        for(let item in data.items) {// アイテム数分繰り返し
+          if ((item in this.items) == false) {
 // 初回のみsvgにpathを追加
-          let index = Object.keys(this.items).length;
-          let offset_y = 60 + 16 * index;
-          this.items[item] = {};
-          this.items[item].color = this.cScale(index);
-          this.items[item].path = this.svg.append("path");                            
-          this.items[item].line = this.svg.append("line")
-            .attr("x1",65)
-            .attr("x2",75)
-            .attr("y1",offset_y)
-            .attr("y2",offset_y)
-            .attr("stroke-width",2)
-            .attr("stroke",this.items[item].color);
-          this.items[item].text = this.svg.append("text").
-            attr("x",80)
-            .attr("y",offset_y)
-            .attr("font-size","10px");
-        }
+            let index = Object.keys(this.items).length;
+            let offset_y = 60 + 16 * index;
+            this.items[item] = {};
+            this.items[item].color = this.cScale(index);
+            this.items[item].path = this.svg.append("path");                            
+            this.items[item].line = this.svg.append("line")
+              .attr("x1",65)
+              .attr("x2",75)
+              .attr("y1",offset_y)
+              .attr("y2",offset_y)
+              .attr("stroke-width",2)
+              .attr("stroke",this.items[item].color);
+            this.items[item].text = this.svg.append("text").
+              attr("x",80)
+              .attr("y",offset_y)
+              .attr("font-size","10px");
+          }
 // データの更新
-        this.items[item].path.datum(data.items[item].history)
-          .attr("fill", "none")
-          .attr("stroke", this.items[item].color)
-          .attr("d", this.line);
-        this.items[item].text.text(`${item} [${data.items[item].model}]  ${data.items[item].history[0]}%`);
+          this.items[item].path.datum(data.items[item].history)
+            .attr("fill", "none")
+            .attr("stroke", this.items[item].color)
+            .attr("d", this.line);
+          this.items[item].text.text(`${item} [${data.items[item].model}]  ${data.items[item].history[0]}%`);
+        }
       }
     }
-  }
-  const data = new performanceMonitor("#monitor1", 600, 400, "https://de1.bot-hosting.net:22498/monitor1");
-  const monitor1 = data.monitor1
-  function updateDataset() {
-    monitor1.update();
-  }
-  setInterval(updateDataset,1000);
-  updateDataset();
-  </script>
-</body>
+    const data = new performanceMonitor("#monitor1", 600, 400, "https://de1.bot-hosting.net:22498/monitor1");
+    const monitor1 = data.monitor1
+    function updateDataset() {
+      monitor1.update();
+    }
+    setInterval(updateDataset,1000);
+    updateDataset();
+    </script>
+  </body>
+</html>
